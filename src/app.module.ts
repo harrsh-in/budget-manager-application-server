@@ -4,9 +4,6 @@ import { AppService } from './app.service';
 import { LoggerService } from './services/logger.service';
 import { RequestLoggerMiddleware } from './middlewares/request-logger.middleware';
 
-/**
- * Main module of the application
- */
 @Module({
     imports: [],
     controllers: [AppController],
@@ -14,7 +11,7 @@ import { RequestLoggerMiddleware } from './middlewares/request-logger.middleware
 })
 export class AppModule implements NestModule {
     /**
-     * Configure the middleware
+     * Configure the global middleware
      * @param consumer
      */
     configure(consumer: MiddlewareConsumer) {
