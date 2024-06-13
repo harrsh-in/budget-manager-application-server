@@ -10,7 +10,8 @@ import {
     Injectable,
     NestInterceptor,
 } from '@nestjs/common';
-import { map, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 /**
  * Response interceptor to handle the response from the server
@@ -26,10 +27,18 @@ export class ResponseInterceptor implements NestInterceptor {
     intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
         return next.handle().pipe(
             map(data => {
+                /**
+                 * Check if response has meta field.
+                 * If it has, then remove meta from data and return it as an individual field.
+                 * */
+                console.log(data);
+                const { data: responseData, meta, message } = data;
+
                 return {
-                    data,
-                    statusCode: 200,
-                    message: 'Success',
+                    data: responseData,
+                    meta,
+                    statusCode: context.switchToHttp().getResponse().statusCode,
+                    message,
                 };
             }),
         );
