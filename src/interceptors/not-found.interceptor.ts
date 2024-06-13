@@ -25,7 +25,7 @@ export class NotFoundInterceptor implements ExceptionFilter {
         const response = ctx.getResponse<Response>();
 
         response.status(404).json({
-            data: null,
+            data: undefined,
             statusCode: 404,
             message: 'Not Found',
         });
