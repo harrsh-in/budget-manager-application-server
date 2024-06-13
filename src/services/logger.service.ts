@@ -45,8 +45,10 @@ export class LoggerService implements NestJsLoggerService {
      * @param message
      * @param trace
      */
-    error(message: string, trace: string) {
-        this.logger.log('error', message, { trace });
+    error(message: string, trace?: string) {
+        this.logger.log('error', message, {
+            trace,
+        });
     }
 
     /**

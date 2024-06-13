@@ -1,12 +1,13 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { LoggerService } from './common/services/logger.service';
-import { RequestLoggerMiddleware } from './common/middlewares/request-logger.middleware';
-import { PrismaModule } from './common/prisma/prisma.module';
+import { LoggerService } from './services/logger.service';
+import { RequestLoggerMiddleware } from './middlewares/request-logger.middleware';
+import { PrismaModule } from './prisma/prisma.module';
+import { SeederModule } from './seeder/seeder.module';
 
 @Module({
-    imports: [PrismaModule],
+    imports: [PrismaModule, SeederModule],
     controllers: [AppController],
     providers: [AppService, LoggerService],
 })

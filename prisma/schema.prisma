@@ -62,6 +62,7 @@ model users {
   username       String          @unique
   name           String
   email          String          @unique
+  password       String
   contact_number String          @unique
   user_role      user_role
   created_at     DateTime        @default(now())

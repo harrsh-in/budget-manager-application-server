@@ -1,8 +1,8 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { ResponseInterceptor } from './common/interceptors/response.interceptor';
-import { ErrorInterceptor } from './common/interceptors/error.interceptor';
-import { NotFoundInterceptor } from './common/interceptors/not-found.interceptor';
+import { ResponseInterceptor } from './interceptors/response.interceptor';
+import { ErrorInterceptor } from './interceptors/error.interceptor';
+import { NotFoundInterceptor } from './interceptors/not-found.interceptor';
 import helmet from 'helmet';
 
 async function bootstrap() {

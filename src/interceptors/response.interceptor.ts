@@ -31,7 +31,7 @@ export class ResponseInterceptor implements NestInterceptor {
                  * Check if response has meta field.
                  * If it has, then remove meta from data and return it as an individual field.
                  * */
-                const { data: responseData, meta, message } = data;
+                const { data: responseData, meta, message } = data ?? {};
 
                 return {
                     data: responseData,
