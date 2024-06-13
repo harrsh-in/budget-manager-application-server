@@ -1,13 +1,25 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { LoggerService } from './services/logger.service';
+import { LoggerService } from './logger/logger.service';
 import { RequestLoggerMiddleware } from './middlewares/request-logger.middleware';
 import { PrismaModule } from './prisma/prisma.module';
 import { SeederModule } from './seeder/seeder.module';
+import { LoggerModule } from './logger/logger.module';
+import { AuthModule } from './auth/auth.module';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
-    imports: [PrismaModule, SeederModule],
+    imports: [
+        LoggerModule,
+        PrismaModule,
+        SeederModule,
+        JwtModule.register({
+            global: true,
+            secret: 'jwtConstants.secret',
+        }),
+        AuthModule,
+    ],
     controllers: [AppController],
     providers: [AppService, LoggerService],
 })

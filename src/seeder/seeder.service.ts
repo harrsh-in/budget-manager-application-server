@@ -1,10 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { LoggerService } from '../services/logger.service';
+import { LoggerService } from '../logger/logger.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { encryptPassword } from '../utils/password';
 import { Prisma } from '@prisma/client';
 
-// This is the file for seeding the users.
 @Injectable()
 export class SeederService {
     constructor(
