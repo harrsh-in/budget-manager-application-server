@@ -1,0 +1,255 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum user_role {
+  user
+  admin
+}
+
+enum account_type {
+  savings
+  debt
+  investment
+}
+
+enum notification_type {
+  reminder
+  alert
+  goal_update
+}
+
+enum transaction_type {
+  expense
+  income
+  transfer
+}
+
+enum frequency_type {
+  daily
+  weekly
+  biweekly
+  monthly
+  quarterly
+  yearly
+}
+
+enum currency_type {
+  usd
+  eur
+  gbp
+  inr
+  jpy
+}
+
+enum entity_type {
+  transaction
+  goal
+}
+
+enum permission_level {
+  read
+  write
+}
+
+model users {
+  user_id        String          @id @default(uuid())
+  username       String          @unique
+  name           String
+  email          String          @unique
+  contact_number String          @unique
+  user_role      user_role
+  created_at     DateTime        @default(now())
+  updated_at     DateTime        @updatedAt
+  user_settings  user_settings?
+  budgets        budgets[]
+  notifications  notifications[]
+  budget_shares  budget_shares[]
+
+  @@index([username])
+}
+
+model user_settings {
+  user_settings_id         String        @id @default(uuid())
+  user_id                  String        @unique
+  preferred_currency       currency_type
+  notification_preferences Json
+  created_at               DateTime      @default(now())
+  updated_at               DateTime      @updatedAt
+  user                     users         @relation(fields: [user_id], references: [user_id], onDelete: Cascade, onUpdate: Cascade)
+}
+
+model budgets {
+  budget_id             String            @id @default(uuid())
+  user_id               String
+  budget_name           String
+  total_budgeted_amount Float             @default(0)
+  unallocated_amount    Float             @default(0)
+  currency              currency_type
+  start_date            DateTime?
+  end_date              DateTime?
+  created_at            DateTime          @default(now())
+  updated_at            DateTime          @updatedAt
+  deleted_at            DateTime?
+  user                  users             @relation(fields: [user_id], references: [user_id], onDelete: Cascade, onUpdate: Cascade)
+  accounts              accounts[]
+  category_groups       category_groups[]
+  categories            categories[]
+  transactions          transactions[]
+  goals                 goals[]
+  budget_shares         budget_shares[]
+
+  @@index([currency])
+  @@index([start_date])
+}
+
+model budget_shares {
+  share_id         String           @id @default(uuid())
+  budget_id        String
+  user_id          String
+  permission_level permission_level
+  created_at       DateTime         @default(now())
+  updated_at       DateTime         @default(now())
+  budget           budgets          @relation(fields: [budget_id], references: [budget_id], onDelete: Cascade, onUpdate: Cascade)
+  user             users            @relation(fields: [user_id], references: [user_id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@unique([budget_id, user_id], name: "unique_user_budget_share")
+  @@index([permission_level])
+}
+
+model accounts {
+  account_id   String         @id @default(uuid())
+  budget_id    String
+  account_name String
+  account_type account_type
+  total_amount Float          @default(0)
+  currency     currency_type
+  created_at   DateTime       @default(now())
+  updated_at   DateTime       @updatedAt
+  deleted_at   DateTime?
+  budget       budgets        @relation(fields: [budget_id], references: [budget_id], onDelete: Cascade, onUpdate: Cascade)
+  transactions transactions[]
+
+  @@unique([budget_id, account_name], name: "unique_budget_account_name")
+  @@index([account_name])
+  @@index([account_type])
+}
+
+model category_groups {
+  category_group_id   String       @id @default(uuid())
+  budget_id           String
+  category_group_name String
+  created_at          DateTime     @default(now())
+  updated_at          DateTime     @default(now())
+  deleted_at          DateTime?
+  budget              budgets      @relation(fields: [budget_id], references: [budget_id], onDelete: Cascade, onUpdate: Cascade)
+  categories          categories[]
+
+  @@unique([budget_id, category_group_name], name: "unique_budget_category_group_name")
+}
+
+model categories {
+  category_id       String          @id @default(uuid())
+  budget_id         String
+  category_name     String
+  category_group_id String
+  budgeted_amount   Float           @default(0)
+  created_at        DateTime        @default(now())
+  updated_at        DateTime        @default(now())
+  deleted_at        DateTime?
+  budget            budgets         @relation(fields: [budget_id], references: [budget_id], onDelete: Cascade, onUpdate: Cascade)
+  category_group    category_groups @relation(fields: [category_group_id], references: [category_group_id], onDelete: Cascade, onUpdate: Cascade)
+  transactions      transactions[]
+  goals             goals[]
+
+  @@unique([budget_id, category_name], name: "unique_budget_category_name")
+}
+
+model transactions {
+  transaction_id       String           @id @default(uuid())
+  account_id           String
+  category_id          String
+  budget_id            String
+  amount               Float
+  transaction_date     DateTime         @default(now())
+  memo                 String?
+  transaction_type     transaction_type
+  is_recurring         Boolean          @default(false)
+  frequency            frequency_type?
+  next_occurrence_date DateTime?
+  created_at           DateTime         @default(now())
+  updated_at           DateTime         @default(now())
+  deleted_at           DateTime?
+  account              accounts         @relation(fields: [account_id], references: [account_id], onDelete: Cascade, onUpdate: Cascade)
+  category             categories       @relation(fields: [category_id], references: [category_id], onDelete: Cascade, onUpdate: Cascade)
+  budget               budgets          @relation(fields: [budget_id], references: [budget_id], onDelete: Cascade, onUpdate: Cascade)
+  entity_tags          entity_tags[]
+
+  @@unique([account_id, transaction_id], name: "unique_account_transaction")
+  @@unique([category_id, transaction_id], name: "unique_category_transaction")
+  @@unique([budget_id, transaction_id], name: "unique_budget_transaction")
+  @@index([transaction_date])
+  @@index([transaction_type])
+}
+
+model goals {
+  goal_id        String        @id @default(uuid())
+  budget_id      String
+  category_id    String?
+  goal_name      String
+  target_amount  Float?
+  current_amount Float         @default(0)
+  due_date       DateTime?
+  created_at     DateTime      @default(now())
+  updated_at     DateTime      @default(now())
+  deleted_at     DateTime?
+  budget         budgets       @relation(fields: [budget_id], references: [budget_id], onDelete: Cascade, onUpdate: Cascade)
+  category       categories?   @relation(fields: [category_id], references: [category_id], onDelete: Cascade, onUpdate: Cascade)
+  entity_tags    entity_tags[]
+
+  @@index([goal_name])
+  @@index([due_date])
+}
+
+model tags {
+  tag_id      String        @id @default(uuid())
+  name        String        @unique
+  created_at  DateTime      @default(now())
+  updated_at  DateTime      @default(now())
+  entity_tags entity_tags[]
+
+  @@index([name])
+}
+
+model entity_tags {
+  entity_tag_id String        @id @default(uuid())
+  entity_id     String
+  entity_type   entity_type
+  tag_id        String
+  created_at    DateTime      @default(now())
+  updated_at    DateTime      @default(now())
+  transaction   transactions? @relation(fields: [entity_id], references: [transaction_id], onDelete: Cascade, onUpdate: Cascade, map: "transaction")
+  goal          goals?        @relation(fields: [entity_id], references: [goal_id], onDelete: Cascade, onUpdate: Cascade, map: "goal")
+  tag           tags          @relation(fields: [tag_id], references: [tag_id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@unique([entity_id, entity_type, tag_id], name: "unique_entity_tag")
+}
+
+model notifications {
+  notification_id String            @id @default(uuid())
+  user_id         String
+  message         String
+  read            Boolean           @default(false)
+  type            notification_type
+  created_at      DateTime          @default(now())
+  updated_at      DateTime          @default(now())
+  user            users             @relation(fields: [user_id], references: [user_id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([read])
+  @@index([type])
+}
