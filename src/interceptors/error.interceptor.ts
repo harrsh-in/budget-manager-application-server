@@ -28,7 +28,7 @@ export class ErrorInterceptor implements NestInterceptor {
                 const errorMessage = err.message ?? 'Internal Server Error';
 
                 const response = {
-                    data: undefined,
+                    data: {},
                     statusCode: status,
                     message: errorMessage,
                 };
