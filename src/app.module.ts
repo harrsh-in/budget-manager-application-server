@@ -1,14 +1,12 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { LoggerService } from './logger/logger.service';
 import { RequestLoggerMiddleware } from './middlewares/request-logger.middleware';
 import { PrismaModule } from './prisma/prisma.module';
 import { SeederModule } from './seeder/seeder.module';
-import { LoggerModule } from './logger/logger.module';
 import { AuthModule } from './auth/auth.module';
 import { JwtModule } from '@nestjs/jwt';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { PassportModule } from '@nestjs/passport';
 
 @Module({
@@ -17,17 +15,20 @@ import { PassportModule } from '@nestjs/passport';
         PassportModule.register({
             defaultStrategy: 'jwt',
         }),
-        JwtModule.register({
+        JwtModule.registerAsync({
             global: true,
-            secret: process.env.JWT_SECRET,
+            imports: [ConfigModule],
+            useFactory: async (configService: ConfigService) => ({
+                secret: configService.get('JWT_SECRET'),
+            }),
+            inject: [ConfigService],
         }),
-        LoggerModule,
         PrismaModule,
         SeederModule,
         AuthModule,
     ],
     controllers: [AppController],
-    providers: [AppService, LoggerService],
+    providers: [AppService],
 })
 export class AppModule implements NestModule {
     /**

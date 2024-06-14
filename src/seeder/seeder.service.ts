@@ -1,15 +1,13 @@
-import { Injectable } from '@nestjs/common';
-import { LoggerService } from '../logger/logger.service';
+import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { encryptPassword } from '../utils/password';
 import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class SeederService {
-    constructor(
-        private prisma: PrismaService,
-        private readonly logger: LoggerService,
-    ) {}
+    private readonly logger = new Logger(SeederService.name);
+
+    constructor(private prisma: PrismaService) {}
 
     async seed() {
         const seederResponseData = await Promise.allSettled([this.seedUsers()]);

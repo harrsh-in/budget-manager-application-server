@@ -20,6 +20,12 @@ export class AuthService {
             where: {
                 email,
             },
+            select: {
+                user_id: true,
+                email: true,
+                password: true,
+                user_role: true,
+            },
         });
         if (!user) {
             throw new Error('User not found');
@@ -48,6 +54,9 @@ export class AuthService {
         const userExists = await this.prisma.users.findUnique({
             where: {
                 email: user.email,
+            },
+            select: {
+                user_id: true,
             },
         });
         if (userExists) {
