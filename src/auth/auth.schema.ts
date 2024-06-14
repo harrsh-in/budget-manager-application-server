@@ -19,7 +19,7 @@ export const SignInSchema = object({
 export type SignInSchemaInterface = z.infer<typeof SignInSchema>;
 
 export const SignUpSchema = object({
-    user_name: string({
+    username: string({
         message: 'Username is required.',
         required_error: 'Username is required.',
         invalid_type_error: 'Please enter a valid username.',
@@ -29,7 +29,7 @@ export const SignUpSchema = object({
         required_error: 'Name is required.',
         invalid_type_error: 'Please enter a valid name.',
     }).min(1, 'Name is required.'),
-    contact_number: string({
+    contactNumber: string({
         message: 'Contact number is required.',
         required_error: 'Contact number is required.',
         invalid_type_error: 'Please enter a valid contact number.',

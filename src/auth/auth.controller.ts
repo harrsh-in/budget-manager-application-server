@@ -19,7 +19,7 @@ export class AuthController {
     @Post('sign-in')
     @UsePipes(new ValidationPipe(SignInSchema))
     async signIn(@Body() user: SignInSchemaInterface) {
-        return this.authService.signIn(user);
+        return await this.authService.signIn(user);
     }
 
     @Post('sign-up')

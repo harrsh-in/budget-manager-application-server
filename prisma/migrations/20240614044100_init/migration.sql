@@ -28,6 +28,7 @@ CREATE TABLE "users" (
     "username" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "email" TEXT NOT NULL,
+    "password" TEXT NOT NULL,
     "contact_number" TEXT NOT NULL,
     "user_role" "user_role" NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -200,6 +201,12 @@ CREATE UNIQUE INDEX "users_contact_number_key" ON "users"("contact_number");
 
 -- CreateIndex
 CREATE INDEX "users_username_idx" ON "users"("username");
+
+-- CreateIndex
+CREATE INDEX "users_email_idx" ON "users"("email");
+
+-- CreateIndex
+CREATE INDEX "users_contact_number_idx" ON "users"("contact_number");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "user_settings_user_id_key" ON "user_settings"("user_id");

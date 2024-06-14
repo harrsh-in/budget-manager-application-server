@@ -9,10 +9,14 @@ import { LoggerModule } from './logger/logger.module';
 import { AuthModule } from './auth/auth.module';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule } from '@nestjs/config';
+import { PassportModule } from '@nestjs/passport';
 
 @Module({
     imports: [
         ConfigModule.forRoot(),
+        PassportModule.register({
+            defaultStrategy: 'jwt',
+        }),
         JwtModule.register({
             global: true,
             secret: process.env.JWT_SECRET,

@@ -55,15 +55,15 @@ export class AuthService {
         }
 
         user.password = await encryptPassword(user.password);
-        const { password, email, user_name, name, contact_number } = user;
+        const { password, email, username, name, contactNumber } = user;
         await this.prisma.users.create({
             data: {
                 email,
                 name,
                 password,
-                contact_number,
+                username,
+                contact_number: contactNumber,
                 user_role: 'user',
-                username: user_name,
             },
         });
 

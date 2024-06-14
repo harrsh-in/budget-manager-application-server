@@ -30,6 +30,7 @@ export class ErrorInterceptor implements NestInterceptor {
                 const response = {
                     data: {},
                     statusCode: status,
+                    status: false,
                     message: errorMessage,
                 };
 

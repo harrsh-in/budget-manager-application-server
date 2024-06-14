@@ -73,6 +73,8 @@ model users {
   budget_shares  budget_shares[]
 
   @@index([username])
+  @@index([email])
+  @@index([contact_number])
 }
 
 model user_settings {

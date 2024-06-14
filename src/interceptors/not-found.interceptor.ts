@@ -27,6 +27,7 @@ export class NotFoundInterceptor implements ExceptionFilter {
         response.status(404).json({
             data: {},
             statusCode: 404,
+            status: false,
             message: 'Not Found',
         });
     }

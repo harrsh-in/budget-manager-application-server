@@ -7,6 +7,7 @@
 import {
     CallHandler,
     ExecutionContext,
+    HttpStatus,
     Injectable,
     NestInterceptor,
 } from '@nestjs/common';
@@ -27,16 +28,22 @@ export class ResponseInterceptor implements NestInterceptor {
     intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
         return next.handle().pipe(
             map(data => {
-                /**
-                 * Check if response has meta field.
-                 * If it has, then remove meta from data and return it as an individual field.
-                 * */
-                const { meta, message, ...responseData } = data ?? {};
+                const { meta, message, access_token, ...responseData } =
+                    data ?? {};
+                const response = context.switchToHttp().getResponse();
 
+                if (access_token) {
+                    response.cookie('Authorization', access_token, {
+                        httpOnly: true,
+                    });
+                }
+
+                response.status(HttpStatus.OK);
                 return {
                     data: responseData,
                     meta,
-                    statusCode: context.switchToHttp().getResponse().statusCode,
+                    statusCode: 200,
+                    status: true,
                     message,
                 };
             }),
