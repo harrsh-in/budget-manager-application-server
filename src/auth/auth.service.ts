@@ -5,7 +5,10 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { comparePassword, encryptPassword } from '../utils/password';
 import { JwtService } from '@nestjs/jwt';
-import { SignInSchemaInterface, SignUpSchemaInterface } from './auth.schema';
+import {
+    UserLoginSchemaInterface,
+    UserRegistrationSchemaInterface,
+} from './auth.schema';
 
 @Injectable()
 export class AuthService {
@@ -14,7 +17,7 @@ export class AuthService {
         private jwtService: JwtService,
     ) {}
 
-    async signIn(body: SignInSchemaInterface) {
+    async login(body: UserLoginSchemaInterface) {
         const { password, email } = body;
         const user = await this.prisma.users.findUnique({
             where: {
@@ -50,7 +53,29 @@ export class AuthService {
         };
     }
 
-    async signUp(user: SignUpSchemaInterface) {
+    async verifyUserByToken(token: string) {
+        try {
+            const payload = this.jwtService.verify(token);
+            const user = await this.prisma.users.findUnique({
+                where: {
+                    user_id: payload.sub,
+                },
+                select: {
+                    user_id: true,
+                    email: true,
+                    user_role: true,
+                },
+            });
+            if (!user) {
+                throw new Error('User not found');
+            }
+            return user;
+        } catch (e) {
+            throw new Error('Invalid token');
+        }
+    }
+
+    async register(user: UserRegistrationSchemaInterface) {
         const userExists = await this.prisma.users.findUnique({
             where: {
                 email: user.email,

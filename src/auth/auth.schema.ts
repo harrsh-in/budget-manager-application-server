@@ -4,7 +4,7 @@
 
 import { object, string, z } from 'zod';
 
-export const SignInSchema = object({
+export const UserLoginSchema = object({
     email: string({
         message: 'Please enter email address.',
         required_error: 'Please enter email address.',
@@ -16,9 +16,9 @@ export const SignInSchema = object({
         invalid_type_error: 'Please enter a valid password.',
     }).min(1, 'Password is required.'),
 });
-export type SignInSchemaInterface = z.infer<typeof SignInSchema>;
+export type UserLoginSchemaInterface = z.infer<typeof UserLoginSchema>;
 
-export const SignUpSchema = object({
+export const UserRegistrationSchema = object({
     username: string({
         message: 'Username is required.',
         required_error: 'Username is required.',
@@ -45,4 +45,6 @@ export const SignUpSchema = object({
         invalid_type_error: 'Please enter a valid password.',
     }).min(1, 'Password is required.'),
 });
-export type SignUpSchemaInterface = z.infer<typeof SignUpSchema>;
+export type UserRegistrationSchemaInterface = z.infer<
+    typeof UserRegistrationSchema
+>;

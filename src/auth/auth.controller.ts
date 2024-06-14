@@ -6,25 +6,25 @@ import { Body, Controller, Post, UsePipes } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { ValidationPipe } from '../pipes/validation.pipe';
 import {
-    SignInSchema,
-    SignInSchemaInterface,
-    SignUpSchema,
-    SignUpSchemaInterface,
+    UserLoginSchema,
+    UserLoginSchemaInterface,
+    UserRegistrationSchema,
+    UserRegistrationSchemaInterface,
 } from './auth.schema';
 
 @Controller('auth')
 export class AuthController {
     constructor(private readonly authService: AuthService) {}
 
-    @Post('sign-in')
-    @UsePipes(new ValidationPipe(SignInSchema))
-    async signIn(@Body() user: SignInSchemaInterface) {
-        return await this.authService.signIn(user);
+    @Post('login')
+    @UsePipes(new ValidationPipe(UserLoginSchema))
+    async login(@Body() user: UserLoginSchemaInterface) {
+        return await this.authService.login(user);
     }
 
-    @Post('sign-up')
-    @UsePipes(new ValidationPipe(SignUpSchema))
-    async signUp(@Body() user: SignUpSchemaInterface) {
-        return this.authService.signUp(user);
+    @Post('register')
+    @UsePipes(new ValidationPipe(UserRegistrationSchema))
+    async register(@Body() user: UserRegistrationSchemaInterface) {
+        return this.authService.register(user);
     }
 }

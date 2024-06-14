@@ -8,6 +8,7 @@ import { AuthModule } from './auth/auth.module';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { PassportModule } from '@nestjs/passport';
+import { JwtAuthMiddleware } from './middlewares/jwt-auth.middleware';
 
 @Module({
     imports: [
@@ -36,6 +37,8 @@ export class AppModule implements NestModule {
      * @param consumer
      */
     configure(consumer: MiddlewareConsumer) {
-        consumer.apply(RequestLoggerMiddleware).forRoutes('*');
+        consumer
+            .apply(RequestLoggerMiddleware, JwtAuthMiddleware)
+            .forRoutes('*');
     }
 }
